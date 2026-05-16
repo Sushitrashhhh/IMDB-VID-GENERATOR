@@ -1,6 +1,4 @@
 import "server-only";
-import fs from "fs/promises";
-import path from "path";
 import { Readable } from "stream";
 import type { ScriptData } from "./types";
 
@@ -39,16 +37,7 @@ export async function synthesizeSpeech(text: string): Promise<Buffer> {
   return streamToBuffer(audioStream);
 }
 
-export function getNarrationDir(): string {
-  return path.join(process.cwd(), "public", "narration");
-}
-
-export async function saveNarrationMp3(
-  buffer: Buffer,
-  fileName: string
-): Promise<string> {
-  const dir = getNarrationDir();
-  await fs.mkdir(dir, { recursive: true });
-  await fs.writeFile(path.join(dir, fileName), buffer);
-  return `/narration/${fileName}`;
+/** Data URL works on Vercel (read-only filesystem) and locally. */
+export function bufferToAudioDataUrl(buffer: Buffer): string {
+  return `data:audio/mpeg;base64,${buffer.toString("base64")}`;
 }

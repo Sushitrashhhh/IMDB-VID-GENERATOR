@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { randomUUID } from "crypto";
 import {
   buildNarrationText,
-  saveNarrationMp3,
+  bufferToAudioDataUrl,
   synthesizeSpeech,
 } from "@/lib/tts";
 import type { ScriptData } from "@/lib/types";
@@ -19,7 +18,7 @@ export async function POST(request: Request) {
 
     const text = buildNarrationText(script);
     const audio = await synthesizeSpeech(text);
-    const url = await saveNarrationMp3(audio, `${randomUUID()}.mp3`);
+    const url = bufferToAudioDataUrl(audio);
 
     return NextResponse.json({ url, textLength: text.length });
   } catch (err) {
